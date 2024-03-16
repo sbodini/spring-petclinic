@@ -121,21 +121,10 @@ class PetController {
 
 		this.owners.save(owner);
 
-		try {
-			ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.findAndRegisterModules();
-			String petAsJson = objectMapper.writeValueAsString(pet);
-			RestTemplate restTemplate = new RestTemplate();
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<String> request = new HttpEntity<>(petAsJson, headers);
-			ResponseEntity<String> response = restTemplate.postForEntity(POSTMAN_URL, request, String.class);
-			if (!response.getStatusCode().is2xxSuccessful()) {
-				System.out.printf("Unsuccessful POST of new pet to %s", POSTMAN_URL);
-			}
-		}
-		catch (JsonProcessingException e) {
-			System.out.printf("Unable to map pet to JSON, skipping the POST request to %s", POSTMAN_URL);
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = restTemplate.postForEntity(POSTMAN_URL, pet, String.class);
+		if (!response.getStatusCode().is2xxSuccessful()) {
+			System.out.printf("Unsuccessful POST of new pet to %s", POSTMAN_URL);
 		}
 
 		redirectAttributes.addFlashAttribute("message", "New Pet has been Added");
